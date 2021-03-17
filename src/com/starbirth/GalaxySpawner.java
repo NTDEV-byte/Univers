@@ -16,6 +16,7 @@ public class GalaxySpawner {
 	private int pixels[];
 	private Random random = new Random();
 	private int xa,ya,timer;
+	private int sizeObjects = 1;
 	
 			public GalaxySpawner(int width,int height) {
 				 this.width = width;
@@ -25,6 +26,7 @@ public class GalaxySpawner {
 			
 			public void render(int xOffs,int yOffs) { 
 				int yp = 0,xp = 0;
+				int star;
 				if(timer < 7500) timer++; else timer = 0;
 				if(timer % GALAXY_RATE_BIRTH == 0) { 
 					xa = random.nextInt(UNIVERS_SIZE);
@@ -40,19 +42,21 @@ public class GalaxySpawner {
 							  ya = random.nextInt(UNIVERS_SIZE);
 						 }
 						
-						 pixels[x + y * width] = UNIVERS[(xp & UNIVERS_LIMIT) + (yp & UNIVERS_LIMIT) * UNIVERS_SIZE];
+						if(sizeObjects >= 1) { 
+						 star = (((xp / sizeObjects) & UNIVERS_LIMIT) + ((yp / sizeObjects)& UNIVERS_LIMIT) * UNIVERS_SIZE);
+						}
+						else {
+							 sizeObjects = 1;
+							 star = (((xp / sizeObjects) & UNIVERS_LIMIT) + ((yp / sizeObjects)& UNIVERS_LIMIT) * UNIVERS_SIZE);
+						}
+						 
+						 pixels[x + y * width] =  UNIVERS[star];
 					}
 				}
 				
 			}
 			
-			public void travelMilkyWay(){ 
-				if(galaxies() >= GALAXY_PROLIFERATION_LIMIT) { 
-					
-				}
-			}
-			
-			private int galaxies() { 
+			public int galaxies() { 
 				int total = 0;
 				for(int i=0;i<pixels.length;i++) {
 					 if(pixels[i] != DARK_MATTER) { 
@@ -61,10 +65,26 @@ public class GalaxySpawner {
 				}
 				return total;
 			}
+			
+			
+			public void zoomIn() { 
+				sizeObjects++;
+			}
+			
+			public void zoomOut() { 
+			   if(sizeObjects > 1) {
+				   
+			   }
+			   	else {
+				 sizeObjects = 1;   
+			   }
+				sizeObjects--;
+			}
+			
 			public int getWidth() {
 				return width;
 			}
-
+			
 			public void setWidth(int width) {
 				this.width = width;
 			}

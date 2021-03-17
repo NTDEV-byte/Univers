@@ -8,8 +8,19 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
+
+
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class Univers extends Canvas implements Runnable{
 
@@ -27,12 +38,12 @@ public class Univers extends Canvas implements Runnable{
 	private int pixels[] = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private boolean running;
 	private Thread thread;
-	private GalaxySpawner screen;
+	private GalaxySpawner observableUni;
 	private InputHandler input;
 	private int x,y,xDir,yDir;
 	
 		public Univers() { 
-			screen = new GalaxySpawner(WIDTH,HEIGHT);
+			observableUni = new GalaxySpawner(WIDTH,HEIGHT);
 			input = new InputHandler();
 		}
 		
@@ -47,6 +58,15 @@ public class Univers extends Canvas implements Runnable{
 			window.add(this);
 			window.pack();
 		}
+		
+		private void playSound()
+		{ 
+			 new javafx.embed.swing.JFXPanel();
+			Media media = new Media(new File("./sounds/interstellar.mp3").toURI().toString());
+			MediaPlayer player = new MediaPlayer(media);
+			player.play();
+		}
+		
 		
 		public void start() { 
 			running = true;
@@ -70,6 +90,14 @@ public class Univers extends Canvas implements Runnable{
 		else if(input.left)
 			xDir--;
 		
+		else if(input.m) {
+			observableUni.zoomOut();
+			System.out.println("-");
+		}
+		
+		else if(input.p)
+			observableUni.zoomIn();
+		
 		x+=xDir;
 		y+=yDir;
 		}
@@ -81,9 +109,10 @@ public class Univers extends Canvas implements Runnable{
 				return;
 			}
 			Graphics g = bs.getDrawGraphics();
-			screen.render(x,y);
+			observableUni.render(x,y);
 			flipBuffer();
 			g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+			
 			showInfo(g);
 			g.dispose();
 			bs.show();
@@ -93,8 +122,9 @@ public class Univers extends Canvas implements Runnable{
 		private void showInfo(Graphics g) { 
 			g.setColor(Color.GREEN);
 			g.setFont(new Font("Verdana",Font.BOLD,15));
-			g.drawString("xSpeed: "+xDir, 10, 20);
-			g.drawString("ySpeed: "+yDir, 10, 40);
+			g.drawString("XSpeed: "+xDir, 10, 20);
+			g.drawString("XSpeed: "+yDir, 10, 40);
+			g.drawString("Galaxies: "+observableUni.galaxies(),10,60);
 		}
 	@Override
 	public void run() {
@@ -104,7 +134,7 @@ public class Univers extends Canvas implements Runnable{
 		double lastime = System.nanoTime();
 		double now;
 		double delta = 0;
-		
+		playSound();
 		while(running) { 
 			now = System.nanoTime();
 			delta+=(now - lastime) / fps;
@@ -119,10 +149,12 @@ public class Univers extends Canvas implements Runnable{
 	}
 	
 	
+	
+	
 	private void flipBuffer() {
 		 for(int y=0;y<HEIGHT;y++) {
 			  for(int x=0;x<WIDTH;x++) { 
-				  pixels[x + y * WIDTH] = screen.getPixels()[x + y * WIDTH];
+				  pixels[x + y * WIDTH] = observableUni.getPixels()[x + y * WIDTH];
 			  }
 		 }
 	}
