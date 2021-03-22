@@ -8,7 +8,7 @@ public class GalaxySpawner {
 	public static final int UNIVERS_LIMIT = 256 - 1;
 	public static final int GALAXY_RATE_BIRTH = 150;
 	public static final int GALAXY_PROLIFERATION_LIMIT = 200;
-	public static final int DARK_MATTER = 0x0;
+	public static final int DARK_MATTER = 0x00000000;
 	public static final int UNIVERS[] = new int[UNIVERS_SIZE * UNIVERS_SIZE];
 	
 	private int width;
@@ -31,7 +31,7 @@ public class GalaxySpawner {
 				if(timer % GALAXY_RATE_BIRTH == 0) { 
 					xa = random.nextInt(UNIVERS_SIZE);
 					ya = random.nextInt(UNIVERS_SIZE);
-					UNIVERS[xa + ya * UNIVERS_SIZE] = random.nextInt(0xffffff);
+					UNIVERS[xa + ya * UNIVERS_SIZE] = random.nextInt(0xffffff) + 15;
 				}
 				for(int y=0;y<height;y++) { 
 					yp = y + yOffs;
